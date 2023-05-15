@@ -1,9 +1,6 @@
 import discord
-import os
 from discord.ext import commands
-
-with open(os.path.join(os.path.dirname(__file__), "thriller_keys.txt")) as f:
-    thriller_token, thriller_id = f.readline().strip().split(" ")
+from Thriller_token import *
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -13,12 +10,11 @@ class ThrillerBot(commands.Bot):
         super().__init__(
             command_prefix="!",
             case_insensitive=False,
-            help_command=None,
             description="도움말 제목",
             intents=intents.all(),
             sync_command=True,
         )
-        self.thrillerCogs = ["Greetings", "Help"]
+        self.thrillerCogs = ["Greetings", "Help", "Messages"]
 
     async def setup_hook(self):
         for cog in self.thrillerCogs:
@@ -31,4 +27,4 @@ class ThrillerBot(commands.Bot):
         await self.change_presence(status=discord.Status.online, activity=activity)
 
 bot = ThrillerBot()
-bot.run(thriller_token)
+bot.run(THRILLER_TOKEN)
