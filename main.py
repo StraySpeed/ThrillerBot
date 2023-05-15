@@ -14,7 +14,7 @@ class ThrillerBot(commands.Bot):
             intents=intents.all(),
             sync_command=True,
         )
-        self.thrillerCogs = ["Greetings", "Help", "Messages"]
+        self.thrillerCogs = ["Greetings", "Help", "Messages", "Army"]
 
     async def setup_hook(self):
         for cog in self.thrillerCogs:
