@@ -15,7 +15,7 @@ class Greetings(commands.Cog):
             await channel.send(f'{member.mention} 님, {member.guild}에 어서오세요!')
 
     @commands.hybrid_command(name="안녕", with_app_command=True)
-    async def hello(self, ctx, *, member: discord.Member = None):
+    async def hello(self, ctx: commands.Context, *, member: discord.Member = None):
         """ 안녕을 출력합니다. """
         member = member or ctx.author
         await ctx.send(f'{member.mention} 님, 안녕하세요!')
