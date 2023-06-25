@@ -16,12 +16,15 @@ class Messages(commands.Cog):
         """
         메시지가 입력되었을 때 실행되는 함수
         """
+        # 서버장은 제외하도록
+        if message.author == message.guild.owner:
+            return
         checkEmoji = ['🐍']
         msg = message.content
         for check in checkEmoji:
             if msg.find(check) != -1:
                 await message.delete()
-                await message.channel.send("해당 이모티콘은 사용하실 수 없습니다.")
+                await message.channel.send(f"{message.author.mention}님, 해당 이모티콘은 사용하실 수 없습니다.")
                 break
 
 async def setup(bot): # Cog를 추가하는 코루틴
