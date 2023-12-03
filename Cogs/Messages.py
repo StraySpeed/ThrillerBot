@@ -12,11 +12,19 @@ class Messages(commands.Cog):
         """ 주사위를 굴립니다. """
         await ctx.send(f'{random.randint(1, 6)} 이(가) 나왔습니다.')
 
+    @commands.has_permissions(manage_messages=True)
     @commands.hybrid_command(name="청소", with_app_command=True)
     async def clean(self, ctx: commands.Context):
         """ 메시지를 10개 삭제합니다. """
         channel = ctx.channel
         await channel.purge(limit=10)
+
+    @clean.error
+    async def clean_error(self, ctx: commands.Context, error: commands.errors):
+        if isinstance(error, commands.errors.MissingPermissions):
+            await ctx.send(f"{ctx.author.mention}님, 해당 권한이 없습니다.")
+        elif isinstance(error, commands.errors.HybridCommandError):   # hybrid command error
+            await ctx.send(f"{ctx.author.mention}님, 해당 명령어를 사용할 수 없습니다.")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.message.Message):
