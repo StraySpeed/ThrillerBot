@@ -12,6 +12,12 @@ class Messages(commands.Cog):
         """ 주사위를 굴립니다. """
         await ctx.send(f'{random.randint(1, 6)} 이(가) 나왔습니다.')
 
+    @commands.hybrid_command(name="청소", with_app_command=True)
+    async def clean(self, ctx: commands.Context):
+        """ 메시지를 10개 삭제합니다. """
+        channel = ctx.channel
+        await channel.purge(limit=10)
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.message.Message):
         """
