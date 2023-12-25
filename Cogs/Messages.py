@@ -1,7 +1,10 @@
 import discord
+from discord.activity import Spotify
 from discord.ext import commands
 import random
 import requests, json
+import base64
+from io import BytesIO
 
 class Messages(commands.Cog):
     def __init__(self, bot):
@@ -50,13 +53,31 @@ class Messages(commands.Cog):
         # 따라서 User ID를 가지고 유저 정보를 가져오기
         activities = discord.utils.get(ctx.guild.members, id=ctx.author.id).activities
         for activity in activities:
+            # 1. 스포티파이에 등록된 노래를 듣는 경우(class Spotify)
+            # 2. 개인 로컬에 있는 노래를 듣는 경우(class Activity)
+            # 두 가지 케이스를 고려해야함
             if activity.name == "Spotify":
-                embed = discord.Embed(title="Spotify Song🎵", description="현재 재생 중인 노래입니다.", color=activity.color)
-                embed.set_thumbnail(url=activity.album_cover_url)
-                embed.add_field(name="Title", value=activity.title, inline=True)
-                embed.add_field(name="Artists", value=', '.join(activity.artists), inline=True)
-                embed.add_field(name="Album", value=activity.album, inline=False)
-                embed.add_field(name="Listen on Spotify", value=activity.track_url, inline=False)
+                if isinstance(activity, Spotify):
+                    act_color = activity.color
+                    image = activity.album_cover_url
+                    title = activity.title
+                    artists = ', '.join(activity.artists)
+                    album = activity.album
+                    url = activity.track_url
+                else:
+                    act_color = 0x1ED760    # 원본은 0x1DB954 인데,,, 별로 색 차이가 눈에 잘 안들어옴
+                    image = None
+                    title = activity.details
+                    artists = activity.state
+                    album = activity.large_image_text
+                    url = "로컬 파일에서 재생중입니다."   
+                # 출력하기               
+                embed = discord.Embed(title="Spotify Song🎵", description="현재 재생 중인 노래입니다.", color=act_color)
+                if image: embed.set_thumbnail(url=image)
+                embed.add_field(name="Title", value=title, inline=True)
+                embed.add_field(name="Artists", value=artists, inline=True)
+                embed.add_field(name="Album", value=album, inline=False)
+                embed.add_field(name="Listen on Spotify", value=url, inline=False)
                 embed.set_footer(text=f"Created by {ctx.author}")
 
                 msg = await ctx.send(embed=embed)
@@ -67,8 +88,6 @@ class Messages(commands.Cog):
     @commands.hybrid_command(name="서버", with_app_command=True)
     async def server(self, ctx: commands.Context):
         """ 마인크래프트 서버 정보를 가져옵니다. """
-        import base64
-        from io import BytesIO
         URL = "https://api.mcsrvstat.us/2/strayspeed.duckdns.org"
         url = requests.get(URL)
         text = url.text
